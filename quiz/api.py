@@ -110,6 +110,8 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		quiztaker = get_object_or_404(QuizTaker, id=quiztaker_id)
 		question = get_object_or_404(Question, id=question_id)
 
+		quiz = Quiz.objects.get(slug=self.kwargs['slug'])
+
 		if quiztaker.completed:
 			return Response({
 				"message": "This quiz is already complete. You can't submit again"},
@@ -127,13 +129,16 @@ class SubmitQuizAPI(generics.GenericAPIView):
 
 		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
 			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
+			print(answer)
+			print(users_answer.answer)
 			if users_answer.answer == answer:
 				correct_answers += 1
 
-		quiztaker.score = int(correct_answers / quiztaker.quiz.question_set.count()) * 100
+		quiztaker.score = int(correct_answers / quiztaker.quiz.question_set.count() * 100)
+		print(quiztaker.score)
 		quiztaker.save()
 
-		return Response(self.get_serializer(quiztaker).data)
+		return Response(self.get_serializer(quiz).data)
 
 
 
