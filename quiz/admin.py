@@ -16,6 +16,9 @@ class QuestionInline(nested_admin.NestedTabularInline):
 
 
 class QuizAdmin(nested_admin.NestedModelAdmin):
+	prepopulated_fields = {
+        'slug': ['name']
+    	}
 	inlines = [QuestionInline,]
 
 
